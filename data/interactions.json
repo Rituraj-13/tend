@@ -1,0 +1,61 @@
+{
+  "name": "Tend demo interaction pack",
+  "version": 1,
+  "disclaimer": "Demo rule pack only. Not clinical guidance. A clinician decides.",
+  "pairs": [
+    {
+      "a": "warfarin",
+      "b": "trimethoprim",
+      "severity": "high",
+      "reason": "Trimethoprim can strengthen warfarin. The prescriber should review the dose before the new course continues."
+    },
+    {
+      "a": "warfarin",
+      "b": "ibuprofen",
+      "severity": "high",
+      "reason": "Ibuprofen raises bleeding risk with warfarin. Ask the prescriber for a safer option."
+    },
+    {
+      "a": "warfarin",
+      "b": "aspirin",
+      "severity": "high",
+      "reason": "Aspirin adds bleeding risk on top of warfarin. Confirm the combination is intended."
+    },
+    {
+      "a": "sertraline",
+      "b": "tramadol",
+      "severity": "high",
+      "reason": "Both affect serotonin. The prescriber should review the combination."
+    },
+    {
+      "a": "simvastatin",
+      "b": "clarithromycin",
+      "severity": "high",
+      "reason": "Clarithromycin raises simvastatin levels and the risk of muscle injury. Ask about an alternative antibiotic."
+    },
+    {
+      "a": "lisinopril",
+      "b": "spironolactone",
+      "severity": "moderate",
+      "reason": "Both raise potassium. A clinician may want a potassium check."
+    },
+    {
+      "a": "levothyroxine",
+      "b": "calcium carbonate",
+      "severity": "moderate",
+      "reason": "Calcium can reduce levothyroxine absorption. The timing of the doses matters."
+    },
+    {
+      "a": "omeprazole",
+      "b": "clopidogrel",
+      "severity": "moderate",
+      "reason": "Omeprazole can reduce how well clopidogrel works. Ask about another stomach medicine."
+    },
+    {
+      "a": "amlodipine",
+      "b": "simvastatin",
+      "severity": "moderate",
+      "reason": "Amlodipine raises simvastatin levels. The prescriber may cap the simvastatin dose."
+    }
+  ]
+}

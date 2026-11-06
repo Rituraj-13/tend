@@ -1,0 +1,384 @@
+{
+  "generatedAt": "2026-11-03T09:20:00.000Z",
+  "scenario": {
+    "person": "Kamala",
+    "room": "Rao family",
+    "provider": "Switch",
+    "source": "offline",
+    "headline": "Two people. Two agents. One room.",
+    "deck": "No one held the whole medication list. One agent knew the new prescription. The other knew the blood thinner. The room is where the two records finally met."
+  },
+  "slices": [
+    {
+      "key": "maya",
+      "owner": "Maya",
+      "agent": "Maya's agent",
+      "relation": "Daughter",
+      "color": "sage",
+      "records": 3,
+      "medications": [
+        {
+          "name": "paracetamol",
+          "dose": "500 mg",
+          "since": "2026-10-14",
+          "recordedBy": "maya",
+          "sourceEventId": "maya:e0001"
+        },
+        {
+          "name": "trimethoprim",
+          "dose": "100 mg",
+          "since": "2026-11-03",
+          "recordedBy": "maya",
+          "sourceEventId": "maya:e0003"
+        }
+      ],
+      "withheldNotes": 1
+    },
+    {
+      "key": "rohan",
+      "owner": "Rohan",
+      "agent": "Rohan's agent",
+      "relation": "Son",
+      "color": "clay",
+      "records": 6,
+      "medications": [
+        {
+          "name": "warfarin",
+          "dose": "5 mg",
+          "since": "2024-02-11",
+          "recordedBy": "rohan",
+          "sourceEventId": "rohan:e0001"
+        },
+        {
+          "name": "atorvastatin",
+          "dose": "20 mg",
+          "since": "2025-01-08",
+          "recordedBy": "rohan",
+          "sourceEventId": "rohan:e0002"
+        }
+      ],
+      "withheldNotes": 4
+    }
+  ],
+  "shared": {
+    "from": "Maya's agent",
+    "to": "Rohan's agent",
+    "request": {
+      "v": 1,
+      "type": "med_check",
+      "requestId": "q_e0003",
+      "candidate": {
+        "name": "trimethoprim",
+        "dose": "100 mg",
+        "started": "2026-11-03",
+        "sourceEventId": "maya:e0003"
+      }
+    },
+    "reply": {
+      "v": 1,
+      "type": "med_check_reply",
+      "requestId": "q_e0003",
+      "candidate": {
+        "name": "trimethoprim",
+        "dose": "100 mg",
+        "started": "2026-11-03",
+        "sourceEventId": "maya:e0003"
+      },
+      "active": [
+        {
+          "name": "warfarin",
+          "dose": "5 mg",
+          "since": "2024-02-11",
+          "sourceEventId": "rohan:e0001"
+        },
+        {
+          "name": "atorvastatin",
+          "dose": "20 mg",
+          "since": "2025-01-08",
+          "sourceEventId": "rohan:e0002"
+        }
+      ],
+      "withheld": 4
+    },
+    "note": "2 medications shared. 4 notes withheld."
+  },
+  "transcript": [
+    {
+      "id": "m_001",
+      "sender": "Maya",
+      "senderKind": "human",
+      "body": "Mum started trimethoprim 100 mg today. Dr Rao prescribed it.",
+      "target": null,
+      "threadId": null,
+      "at": "2026-11-03T09:12:00.000Z",
+      "beat": "arrival",
+      "tone": "plain"
+    },
+    {
+      "id": "m_002",
+      "sender": "Maya's agent",
+      "senderKind": "agent",
+      "body": "Recorded **Trimethoprim 100 mg** for Kamala, started 3 Nov 2026.\n\nMaya, is 100 mg right? I read your records only, so I cannot see what Rohan holds. I will ask their agent to check this against their list.",
+      "target": null,
+      "threadId": "m_001",
+      "at": "2026-11-03T09:12:00.000Z",
+      "beat": "record",
+      "tone": "agent"
+    },
+    {
+      "id": "m_003",
+      "sender": "Maya's agent",
+      "senderKind": "agent",
+      "body": "Rohan's agent, can you check the records you hold against this new prescription?\n\n```tend\n{\n  \"v\": 1,\n  \"type\": \"med_check\",\n  \"requestId\": \"q_e0003\",\n  \"candidate\": {\n    \"name\": \"trimethoprim\",\n    \"dose\": \"100 mg\",\n    \"started\": \"2026-11-03\",\n    \"sourceEventId\": \"maya:e0003\"\n  }\n}\n```",
+      "target": "Rohan's agent",
+      "threadId": "m_001",
+      "at": "2026-11-03T09:12:00.000Z",
+      "beat": "peer-check",
+      "tone": "peer-check"
+    },
+    {
+      "id": "m_004",
+      "sender": "Rohan's agent",
+      "senderKind": "agent",
+      "body": "Checked my records for **Trimethoprim**.\n\nI hold 2 active medications and 4 notes.\n\nI can share names, doses and dates. I will not share notes.\n\n```tend\n{\n  \"v\": 1,\n  \"type\": \"med_check_reply\",\n  \"requestId\": \"q_e0003\",\n  \"candidate\": {\n    \"name\": \"trimethoprim\",\n    \"dose\": \"100 mg\",\n    \"started\": \"2026-11-03\",\n    \"sourceEventId\": \"maya:e0003\"\n  },\n  \"active\": [\n    {\n      \"name\": \"warfarin\",\n      \"dose\": \"5 mg\",\n      \"since\": \"2024-02-11\",\n      \"sourceEventId\": \"rohan:e0001\"\n    },\n    {\n      \"name\": \"atorvastatin\",\n      \"dose\": \"20 mg\",\n      \"since\": \"2025-01-08\",\n      \"sourceEventId\": \"rohan:e0002\"\n    }\n  ],\n  \"withheld\": 4\n}\n```",
+      "target": "Maya's agent",
+      "threadId": "m_001",
+      "at": "2026-11-03T09:12:00.000Z",
+      "beat": "peer-reply",
+      "tone": "peer-reply"
+    },
+    {
+      "id": "m_005",
+      "sender": "Rohan's agent",
+      "senderKind": "agent",
+      "body": "Rohan, please check this with the pharmacy. I cannot approve a new medicine for you.",
+      "target": "Rohan",
+      "threadId": "m_001",
+      "at": "2026-11-03T09:12:00.000Z",
+      "beat": "record",
+      "tone": "agent"
+    },
+    {
+      "id": "m_006",
+      "sender": "Maya's agent",
+      "senderKind": "agent",
+      "body": "Possible interaction\n\n**Trimethoprim 100 mg** · started 3 Nov 2026 · Maya's record\n**Warfarin 5 mg** · since 11 Feb 2024 · Rohan's record\n\nTrimethoprim can strengthen warfarin. The prescriber should review the dose before the new course continues.\n\n**What I need**\nMaya, confirm with the prescriber before the next dose. Rohan, ask the pharmacy to check it too.\n\nSource: Tend demo rule pack. Not medical advice.",
+      "target": null,
+      "threadId": "m_001",
+      "at": "2026-11-03T09:14:00.000Z",
+      "beat": "conflict",
+      "tone": "conflict"
+    },
+    {
+      "id": "m_007",
+      "sender": "Rohan",
+      "senderKind": "human",
+      "body": "The pharmacist flagged it too. Same interaction. She said hold the new med until Dr Rao confirms.",
+      "target": null,
+      "threadId": null,
+      "at": "2026-11-03T09:16:00.000Z",
+      "beat": "pharmacy",
+      "tone": "pharmacy"
+    },
+    {
+      "id": "m_008",
+      "sender": "Maya",
+      "senderKind": "human",
+      "body": "Decision: hold the new med until Dr Rao confirms.",
+      "target": null,
+      "threadId": null,
+      "at": "2026-11-03T09:18:00.000Z",
+      "beat": "decision",
+      "tone": "decision"
+    },
+    {
+      "id": "m_009",
+      "sender": "Maya's agent",
+      "senderKind": "agent",
+      "body": "Decision recorded\n\nHold the new med until Dr Rao confirms.\n\n**Maya** · 3 Nov 2026, 09:18 · message m_008 · conflict c_0001",
+      "target": null,
+      "threadId": "m_008",
+      "at": "2026-11-03T09:18:00.000Z",
+      "beat": "decision",
+      "tone": "decision"
+    },
+    {
+      "id": "m_010",
+      "sender": "Maya's agent",
+      "senderKind": "agent",
+      "body": "Brief ready for Kamala.\n\n4 medications, 1 decision, 4 notes withheld by another owner.\n\nMaya, the appointment copy is on the Tend page, or ask me for a handover any time.",
+      "target": null,
+      "threadId": "m_008",
+      "at": "2026-11-03T09:18:00.000Z",
+      "beat": "brief",
+      "tone": "handover"
+    }
+  ],
+  "beats": [
+    {
+      "key": "arrival",
+      "label": "Maya posts",
+      "note": "A new prescription, typed in the family room.",
+      "at": "2026-11-03T09:12:00.000Z"
+    },
+    {
+      "key": "record",
+      "label": "Her agent records it",
+      "note": "It asks for the dose and says what it cannot see.",
+      "at": "2026-11-03T09:12:00.000Z"
+    },
+    {
+      "key": "peer-check",
+      "label": "Agent to agent",
+      "note": "Maya's agent asks Rohan's agent by name.",
+      "at": "2026-11-03T09:12:00.000Z"
+    },
+    {
+      "key": "peer-reply",
+      "label": "The missing record",
+      "note": "Warfarin. Five milligrams. Since February 2024.",
+      "at": "2026-11-03T09:12:00.000Z"
+    },
+    {
+      "key": "conflict",
+      "label": "The conflict surfaces",
+      "note": "Neither agent could see it alone.",
+      "at": "2026-11-03T09:14:00.000Z"
+    },
+    {
+      "key": "pharmacy",
+      "label": "A human checks",
+      "note": "Rohan's pharmacist flags the same pair.",
+      "at": "2026-11-03T09:16:00.000Z"
+    },
+    {
+      "key": "decision",
+      "label": "The decision holds",
+      "note": "A name, a time, and a message id.",
+      "at": "2026-11-03T09:18:00.000Z"
+    },
+    {
+      "key": "brief",
+      "label": "The brief is written",
+      "note": "Ready for the next appointment.",
+      "at": "2026-11-03T09:18:00.000Z"
+    }
+  ],
+  "conflict": {
+    "id": "c_0001",
+    "state": "resolved",
+    "finding": {
+      "newMed": "trimethoprim",
+      "existingMed": "warfarin",
+      "severity": "high",
+      "reason": "Trimethoprim can strengthen warfarin. The prescriber should review the dose before the new course continues.",
+      "source": "Tend demo rule pack"
+    },
+    "raisedBy": "Maya's agent",
+    "evidenceEventIds": [
+      "maya:e0003",
+      "rohan:e0001"
+    ],
+    "threadId": "m_001",
+    "messageId": "m_006",
+    "raisedAt": "2026-11-03T09:12:00.000Z",
+    "decisionId": "d_0001"
+  },
+  "decision": {
+    "id": "d_0001",
+    "text": "hold the new med until Dr Rao confirms.",
+    "approvedBy": "Maya",
+    "messageId": "m_008",
+    "at": "2026-11-03T09:18:00.000Z",
+    "conflictId": "c_0001"
+  },
+  "brief": {
+    "person": "Kamala",
+    "generatedAt": "2026-11-03T09:20:00.000Z",
+    "medications": [
+      {
+        "name": "atorvastatin",
+        "dose": "20 mg",
+        "since": "2025-01-08",
+        "recordedBy": "Rohan's agent",
+        "shared": true
+      },
+      {
+        "name": "paracetamol",
+        "dose": "500 mg",
+        "since": "2026-10-14",
+        "recordedBy": "Maya",
+        "shared": false
+      },
+      {
+        "name": "trimethoprim",
+        "dose": "100 mg",
+        "since": "2026-11-03",
+        "recordedBy": "Maya",
+        "shared": false
+      },
+      {
+        "name": "warfarin",
+        "dose": "5 mg",
+        "since": "2024-02-11",
+        "recordedBy": "Rohan's agent",
+        "shared": true
+      }
+    ],
+    "decisions": [
+      {
+        "id": "d_0001",
+        "text": "hold the new med until Dr Rao confirms.",
+        "approvedBy": "Maya",
+        "messageId": "m_008",
+        "at": "2026-11-03T09:18:00.000Z",
+        "conflictId": "c_0001"
+      }
+    ],
+    "conflicts": [
+      {
+        "id": "c_0001",
+        "state": "resolved",
+        "finding": {
+          "newMed": "trimethoprim",
+          "existingMed": "warfarin",
+          "severity": "high",
+          "reason": "Trimethoprim can strengthen warfarin. The prescriber should review the dose before the new course continues.",
+          "source": "Tend demo rule pack"
+        },
+        "raisedBy": "Maya's agent",
+        "evidenceEventIds": [
+          "maya:e0003",
+          "rohan:e0001"
+        ],
+        "threadId": "m_001",
+        "messageId": "m_006",
+        "raisedAt": "2026-11-03T09:12:00.000Z",
+        "decisionId": "d_0001"
+      }
+    ],
+    "questions": [
+      "Ask the prescriber whether Trimethoprim and Warfarin can be taken together."
+    ],
+    "audit": {
+      "ownRecords": 3,
+      "peerRecords": 2,
+      "withheld": 4,
+      "owners": 2
+    },
+    "disclaimer": "Demo rule pack only. Not clinical guidance. A clinician decides."
+  },
+  "metrics": {
+    "messages": 10,
+    "privateRecords": 9,
+    "sharedFacts": 2,
+    "withheld": 4,
+    "agents": 2,
+    "owners": 2
+  },
+  "pack": {
+    "version": 1,
+    "pairs": 9,
+    "disclaimer": "Demo rule pack only. Not clinical guidance. A clinician decides."
+  }
+}
