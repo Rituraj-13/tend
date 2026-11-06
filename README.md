@@ -10,7 +10,7 @@ Tend is a **family medication safety tool** built on Switch. Each adult sibling 
 
 ---
 
-![Tend hero — two private stores and a shared Switch room](docs/shots/01-hero.png)
+![Tend hero — two private stores and a shared Switch room](assets/shots/01-hero.png)
 
 ---
 
@@ -188,13 +188,13 @@ A care record that says "medication held" is a claim. A care record that says **
 
 | | |
 |---|---|
-| ![Hero](docs/shots/01-hero.png) | ![Room replay](docs/shots/02-room.png) |
+| ![Hero](assets/shots/01-hero.png) | ![Room replay](assets/shots/02-room.png) |
 | **Hero** — two private stores, one shared room | **Room replay** — step through every message |
-| ![Room full](docs/shots/03-room-full.png) | ![Brief](docs/shots/04-brief.png) |
+| ![Room full](assets/shots/03-room-full.png) | ![Brief](assets/shots/04-brief.png) |
 | **Conversation** — peer check, conflict card, decision | **Appointment brief** — print-ready A4 |
-| ![Switchboard off](docs/shots/10-switch-off.png) | ![Switchboard on](docs/shots/11-switch-on.png) |
+| ![Switchboard off](assets/shots/10-switch-off.png) | ![Switchboard on](assets/shots/11-switch-on.png) |
 | **Switchboard** — stores sealed, the room is locked | **Switchboard** — the room connects and the gap closes |
-| ![Payload inspector](docs/shots/06-payload.png) | ![Mobile brief](docs/shots/09-mobile-brief.png) |
+| ![Payload inspector](assets/shots/06-payload.png) | ![Mobile brief](assets/shots/09-mobile-brief.png) |
 | **Payload inspector** — the actual JSON exchanged | **Mobile brief** — the appointment copy on a phone |
 
 ---
@@ -279,11 +279,8 @@ tend/
 ├── var/                      Per-owner NDJSON stores (created on first run)
 │   ├── maya/
 │   └── rohan/
-└── docs/
-    ├── BLOG.md               Design write-up for the Best Blog track
-    ├── DEMO.md               90-second shot-by-shot recording script
-    ├── PRD.md                Full product spec and judging map
-    └── shots/                Screenshots (10 images)
+└── assets/
+    └── shots/                README screenshots
 ```
 
 ---
@@ -494,15 +491,12 @@ Built for **Flip the Switch 2026 · Best Personal or Creative Workflow**.
 | **Switch is central** | The conflict needs two agents in one addressed Switch room. Remove the room and the record splits. `server/switch/client.ts` implements the full agent protocol — WebSocket with cursor tracking and reconnect, `send_targeted_message`, `connect_to_room`. |
 | **Technical execution** | `npm install && npm run dev` is the full setup. `npm test` runs 36 tests in ~400ms with no network. `npm run demo` replays the golden path offline. `npm run build` typechecks and produces a production build. |
 | **Creativity and impact** | A family medication safety workflow, not another developer tool. The demo moment is a real information gap — one sibling knew the antibiotic, the other knew the blood thinner — not a prompt trick. |
-| **Presentation and docs** | `docs/DEMO.md` is the 90-second shot-by-shot recording script. `docs/BLOG.md` is the design write-up for the Best Blog track. `docs/PRD.md` is the full product spec. The React web app is the visual submission. |
+| **Presentation and docs** | `README.md` carries the product spec, the demo script, and the judging map. `assets/shots/` holds the screenshots. The React web app is the visual submission. |
 
 ---
 
 ## Further reading
 
-- [`docs/PRD.md`](docs/PRD.md) — Full product spec, agent behaviour, golden path, judging map
-- [`docs/BLOG.md`](docs/BLOG.md) — Design write-up: what crosses between agents and why (Best Blog submission)
-- [`docs/DEMO.md`](docs/DEMO.md) — Shot-by-shot 90-second recording script
 - [`data/interactions.json`](data/interactions.json) — The nine-pair demo interaction rule pack
 - [`server/domain/policy.ts`](server/domain/policy.ts) — The agent's intent router
 - [`server/switch/client.ts`](server/switch/client.ts) — The Switch WebSocket and HTTP client
