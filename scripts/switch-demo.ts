@@ -1,7 +1,9 @@
 import { describeError, SwitchRoom } from "../server/switch/client";
-import { loadConfig, loadRegistrationConfig } from "../server/switch/config";
+import { loadConfig, loadEnvFileIfPresent, loadRegistrationConfig } from "../server/switch/config";
 import { registerAgent } from "../server/switch/register";
 import type { SwitchConfig } from "../server/switch/config";
+
+loadEnvFileIfPresent();
 
 async function main(): Promise<void> {
   if (process.argv.includes("--register")) {

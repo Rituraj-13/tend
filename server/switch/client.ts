@@ -382,7 +382,7 @@ export class SwitchRoom implements Room {
     const senderKind = payload.sender_kind === "agent" ? "agent" : "human";
     const timestamp = numberValue(payload.timestamp);
     const threadId = stringValue(payload.thread_id);
-    const addressed = payload.addressed === true;
+    const addressed = payload.addressed === true || payload.addressed === undefined;
     const at =
       timestamp === null
         ? new Date().toISOString()

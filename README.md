@@ -202,6 +202,12 @@ A care record that says "medication held" is a claim. A care record that says **
 
 ## Quick start
 
+Tend provides two ways to run:
+1. **Instant Offline Replay (`/`)** — Zero external setup, zero API keys. Perfect for offline judging and inspecting the full 10-beat narrative.
+2. **Live Multi-Agent Room (`/live`)** — Connected to a live Switch server, receiving real prescriptions and multi-agent peer checks over WebSockets. (See [Running live with a Switch server](#running-live-with-a-switch-server)).
+
+### Option A: Instant Offline Replay (Evaluation Mode)
+
 **Requirements:** Node.js 20+. No API keys. No external services.
 
 ```bash
@@ -221,11 +227,15 @@ npm run dev
 
 The web app auto-runs the demo before starting, so `npm run dev` is all you need.
 
-**What you'll see in the browser:**
+**What you'll see in the browser at `/`:**
 - **Hero section** — two private stores + shared room visualised side by side
 - **Room section** — interactive replay with play/pause/step controls and expandable JSON payloads
 - **Brief section** — the print-ready appointment brief with a "Print this page" button
 - **Switchboard** — flip the switch to connect two private stores and watch the room fill
+
+### Option B: Real Live Room (`/live`)
+
+To connect real agents to a live Switch server with your own credentials and real-world prescriptions, jump to [Running live with a Switch server](#running-live-with-a-switch-server) and open `http://127.0.0.1:5173/live`.
 
 ---
 
@@ -389,18 +399,97 @@ The endpoint contract and the privacy boundary are below.
 
 Each family member runs one agent process. The two processes connect to the same Switch room and talk to each other through it.
 
-### Step 1 — Register your agent (once per agent)
+You can configure agents using **environment files** (`.env.maya`, `.env.rohan`) or **inline environment variables**.
+
+### Step 1 — Register your agents (once per agent)
+
+Run this once for Maya's agent, and once for Rohan's agent:
 
 ```bash
 SWITCH_BASE_URL=http://your-switch-server \
 SWITCH_REGISTRATION_TOKEN=your-token \
 npm run switch:register
-# Prints SWITCH_AGENT_ID and SWITCH_API_KEY — save both
+# Returns JSON containing agentId and apiKey — save both for each agent
 ```
 
-### Step 2 — Start Maya's agent
+### Step 2 — Configure environment files (Recommended)
+
+Copy the provided example files:
 
 ```bash
+cp .env.maya.example .env.maya
+cp .env.rohan.example .env.rohan
+```
+
+Fill in your `SWITCH_BASE_URL`, `SWITCH_REGISTRATION_TOKEN`, `SWITCH_ROOM_ID`, and the registered `SWITCH_AGENT_ID` and `SWITCH_API_KEY` in `.env.maya` and `.env.rohan`.
+
+### Step 3 — Start the agents
+
+Open two terminal windows:
+
+#### Running with Real Data (Production Mode — Empty/Clean Stores)
+Omit `--seed`. Each agent starts with a clean store (or existing records in `var/<owner>/events.ndjson`). All prescriptions and notes are recorded dynamically from room messages:
+
+```bash
+# Terminal 1 — Maya's agent
+ENV_FILE=.env.maya npm run agent
+
+# Terminal 2 — Rohan's agent
+ENV_FILE=.env.rohan npm run agent
+```
+
+*(Alternatively, if passing inline environment variables without an env file, omit `--seed` from the inline command).*
+
+#### Running the Golden Path Demo (Seed Mode)
+To test the pre-packaged golden path with seeded records (Trimethoprim + Warfarin), add `--seed`:
+
+```bash
+# Terminal 1 — Maya's agent (seeded)
+ENV_FILE=.env.maya npm run agent -- --seed
+
+# Terminal 2 — Rohan's agent (seeded)
+ENV_FILE=.env.rohan npm run agent -- --seed
+```
+
+### Step 4 — Open the live room in your browser
+
+```bash
+npm run dev
+```
+
+Navigate to **<http://127.0.0.1:5173/live>**. You will see both agents connect and report status in real time.
+
+### Step 5 — Post in the Switch room
+
+Type messages into your Switch channel (Telegram, Slack, Mattermost, or via Switch Ops):
+
+1. **Record an existing medication in Rohan's store:**
+   ```text
+   Mum started warfarin 5 mg today.
+   ```
+2. **Post a new prescription in Maya's store:**
+   ```text
+   Mum started trimethoprim 100 mg today. Dr Rao prescribed it.
+   ```
+3. **Watch the live agent coordination:**
+   - Maya's agent records the new medication in Maya's private store (`var/maya/events.ndjson`).
+   - Maya's agent posts a confirmation in the room and sends a targeted `med_check` to Rohan's agent.
+   - Rohan's agent checks its private store, replies with active medications (Warfarin 5 mg), and explicitly withholds private notes (`withheld: 4`).
+   - Maya's agent matches the pair in `data/interactions.json` and posts the **Conflict Card**.
+   - Both `/live` and your chat channel update within 2 seconds.
+
+4. **Record a family decision:**
+   ```text
+   Decision: hold the new med until Dr Rao confirms.
+   ```
+   - Maya's agent records the decision against the message ID and updates the appointment brief.
+
+### Inline environment variables reference (if not using `.env`)
+
+If you prefer passing variables inline rather than using `ENV_FILE`:
+
+```bash
+# Example starting Maya's agent inline:
 TEND_OWNER=Maya \
 TEND_STORE_KEY=maya \
 TEND_PERSON=Kamala \
@@ -412,37 +501,8 @@ SWITCH_API_KEY=<maya-api-key> \
 SWITCH_AGENT_ID=<maya-agent-id> \
 SWITCH_ROOM_ID=<room-id> \
 SWITCH_REGISTRATION_TOKEN=<token> \
-npm run agent -- --seed
+npm run agent
 ```
-
-### Step 3 — Start Rohan's agent (second terminal)
-
-```bash
-TEND_OWNER=Rohan \
-TEND_STORE_KEY=rohan \
-TEND_PERSON=Kamala \
-TEND_AGENT_NAME="Rohan's agent" \
-TEND_PEER_OWNER=Maya \
-TEND_PEER_AGENT="Maya's agent" \
-SWITCH_BASE_URL=http://your-switch-server \
-SWITCH_API_KEY=<rohan-api-key> \
-SWITCH_AGENT_ID=<rohan-agent-id> \
-SWITCH_ROOM_ID=<room-id> \
-SWITCH_REGISTRATION_TOKEN=<token> \
-npm run agent -- --seed
-```
-
-### Step 4 — Post in the room
-
-Type in Telegram, Slack, or Mattermost:
-
-```
-Mum started trimethoprim 100 mg today. Dr Rao prescribed it.
-```
-
-The agents do the rest.
-
-### Environment variables reference
 
 | Variable | Required | Description |
 |---|---|---|
@@ -459,6 +519,7 @@ The agents do the rest.
 | `TEND_PEER_AGENT` | Yes | Display name of the other agent (e.g. `Rohan's agent`) |
 | `TEND_LIVE_DIR` | No | Directory for the live projection. Defaults to `var/live` |
 | `TEND_STORE_ROOT` | No | Directory for the private stores. Defaults to `var` |
+| `ENV_FILE` | No | Path to custom `.env` file (defaults to `.env` if present) |
 
 ---
 

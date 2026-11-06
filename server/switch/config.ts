@@ -1,4 +1,6 @@
 import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 
 export interface SwitchConfig {
   baseUrl: string;
@@ -16,6 +18,19 @@ export interface RegistrationConfig {
 }
 
 const DEFAULT_BASE_URL = "http://127.0.0.1:8000";
+
+export function loadEnvFileIfPresent(customPath?: string): void {
+  const filePath = customPath || process.env.ENV_FILE || ".env";
+  if (existsSync(filePath)) {
+    try {
+      if (typeof process.loadEnvFile === "function") {
+        process.loadEnvFile(resolve(filePath));
+      }
+    } catch {
+      // Ignore if loadEnvFile fails or is unavailable
+    }
+  }
+}
 
 function readBaseUrl(env: NodeJS.ProcessEnv): string {
   const raw = env.SWITCH_BASE_URL?.trim() || DEFAULT_BASE_URL;
@@ -38,6 +53,9 @@ function deriveWsUrl(baseUrl: string): string {
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): SwitchConfig {
+  if (env === process.env) {
+    loadEnvFileIfPresent();
+  }
   const baseUrl = readBaseUrl(env);
   const apiKey = env.SWITCH_API_KEY?.trim() || null;
   const agentId = env.SWITCH_AGENT_ID?.trim() || null;
@@ -78,6 +96,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): SwitchConfig {
 export function loadRegistrationConfig(
   env: NodeJS.ProcessEnv = process.env,
 ): RegistrationConfig {
+  if (env === process.env) {
+    loadEnvFileIfPresent();
+  }
   const baseUrl = readBaseUrl(env);
   const registrationToken = env.SWITCH_REGISTRATION_TOKEN?.trim();
   if (!registrationToken) {

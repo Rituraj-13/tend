@@ -4,8 +4,10 @@ import { CareAgent } from "../server/domain/policy";
 import { Store } from "../server/domain/store";
 import { RecordingRoom } from "../server/live/recorder";
 import { LiveWriter } from "../server/live/writer";
-import { loadConfig } from "../server/switch/config";
+import { loadConfig, loadEnvFileIfPresent } from "../server/switch/config";
 import { runAgent } from "../server/switch/run";
+
+loadEnvFileIfPresent();
 
 const OWNER = required("TEND_OWNER");
 const PERSON = required("TEND_PERSON");
@@ -22,12 +24,19 @@ if (process.argv.includes("--seed")) {
     console.log(`[tend] ${STORE_KEY} already has ${store.eventList().length} records, not seeding`);
   } else if (STORE_KEY === "maya") {
     seedMaya(store);
-    console.log("[tend] seeded Maya's store");
+    console.log("[tend] seeded Maya's store with demo records");
   } else if (STORE_KEY === "rohan") {
     seedRohan(store);
-    console.log("[tend] seeded Rohan's store");
+    console.log("[tend] seeded Rohan's store with demo records");
   } else {
     throw new Error(`No seed data for ${STORE_KEY}. Use TEND_STORE_KEY=maya or rohan.`);
+  }
+} else {
+  const existingCount = store.eventList().length;
+  if (existingCount > 0) {
+    console.log(`[tend] running with ${existingCount} existing record(s) in ${STORE_KEY}'s private store`);
+  } else {
+    console.log(`[tend] starting with fresh private store for ${OWNER} (${STORE_KEY})`);
   }
 }
 
