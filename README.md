@@ -21,7 +21,6 @@ Tend is a **family medication safety tool** built on Switch. Each adult sibling 
 - [The problem](#the-problem)
 - [The demo moment](#the-demo-moment)
 - [How it works](#how-it-works)
-- [Screenshots](#screenshots)
 - [Quick start](#quick-start)
 - [Project structure](#project-structure)
 - [Switch integration](#switch-integration)
@@ -184,21 +183,6 @@ When Maya posts `Decision: hold the new med until Dr Rao confirms.`, the agent r
 ```
 
 A care record that says "medication held" is a claim. A care record that says **"Maya held it at 09:22, in message m_008, against conflict c_0001"** is evidence. The difference is whether the next clinician can audit it.
-
----
-
-## Screenshots
-
-| | |
-|---|---|
-| ![Hero](assets/shots/01-hero.png) | ![Room replay](assets/shots/02-room.png) |
-| **Hero** — two private stores, one shared room | **Room replay** — step through every message |
-| ![Room full](assets/shots/03-room-full.png) | ![Brief](assets/shots/04-brief.png) |
-| **Conversation** — peer check, conflict card, decision | **Appointment brief** — print-ready A4 |
-| ![Switchboard off](assets/shots/10-switch-off.png) | ![Switchboard on](assets/shots/11-switch-on.png) |
-| **Switchboard** — stores sealed, the room is locked | **Switchboard** — the room connects and the gap closes |
-| ![Payload inspector](assets/shots/06-payload.png) | ![Mobile brief](assets/shots/09-mobile-brief.png) |
-| **Payload inspector** — the actual JSON exchanged | **Mobile brief** — the appointment copy on a phone |
 
 ---
 
