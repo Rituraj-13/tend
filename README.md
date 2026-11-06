@@ -206,7 +206,7 @@ A care record that says "medication held" is a claim. A care record that says **
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/your-username/tend
+git clone https://github.com/Rituraj-13/tend.git
 cd tend
 npm install
 
@@ -468,7 +468,7 @@ The agents do the rest.
 npm test
 ```
 
-**59 tests. ~500ms. No network. No API keys.**
+**59 tests. ~700ms. No network. No API keys.**
 
 | File | Tests | What it covers |
 |---|---|---|
@@ -519,7 +519,7 @@ Built for **Flip the Switch 2026 · Best Personal or Creative Workflow**.
 | Criterion | Evidence |
 |---|---|
 | **Switch is central** | The conflict needs two agents in one addressed Switch room. Remove the room and the record splits. `server/switch/client.ts` implements the full agent protocol — WebSocket with cursor tracking and reconnect, `send_targeted_message`, `connect_to_room`. |
-| **Technical execution** | `npm install && npm run dev` is the full setup. `npm test` runs 59 tests in ~500ms with no network. `npm run demo` replays the golden path offline. `npm run build` typechecks and produces a production build. The `/live` route follows two real Switch agents through `var/live` without a second server process. |
+| **Technical execution** | `npm install && npm run dev` is the full setup. `npm test` runs 59 tests in ~700ms with no network. `npm run demo` replays the golden path offline. `npm run build` typechecks and produces a production build. The `/live` route follows two real Switch agents through `var/live` without a second server process. |
 | **Creativity and impact** | A family medication safety workflow, not another developer tool. The demo moment is a real information gap — one sibling knew the antibiotic, the other knew the blood thinner — not a prompt trick. |
 | **Presentation and docs** | `README.md` carries the product spec, the demo script, and the judging map. `assets/shots/` holds the screenshots. The React web app is the visual submission. |
 
