@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { LiveAgent, LiveAgentState, LiveSnapshot } from "../../shared/live";
 import { formatClock, title } from "../../shared/format";
-import { ArrowRight, Mark, Sprig } from "../components/Icons";
+import { ArrowRight, GitHub, Mark, Sprig } from "../components/Icons";
 import { LiveTranscript } from "./LiveTranscript";
 import { useLiveSnapshot } from "./useLiveSnapshot";
 
@@ -42,9 +42,19 @@ export function LivePage() {
             <span className="live__dot" aria-hidden="true" />
             Live room
           </span>
-          <a className="live__nav" href="/">
+          <a className="live__nav live__nav--replay" href="/">
             Replay the demo
             <ArrowRight width={12} height={12} />
+          </a>
+          <a
+            className="live__nav live__github"
+            href="https://github.com/Rituraj-13/tend"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Tend on GitHub"
+          >
+            <GitHub width={16} height={16} />
+            <span>GitHub</span>
           </a>
         </div>
       </header>
@@ -62,6 +72,21 @@ export function LivePage() {
             messages cross the line. Private notes and appointments never do.
           </p>
         </section>
+
+        <aside className="live__disclaimer" aria-label="Deployment notice">
+          <strong>Note</strong>
+          <span>
+            This is a frontend deployment. Connect a backend to run the live agents. Follow the{" "}
+            <a
+              href="https://github.com/Rituraj-13/tend/blob/main/README.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub README quickstart
+            </a>{" "}
+            to set it up.
+          </span>
+        </aside>
 
         <StatusBar
           snapshot={snapshot}
@@ -191,8 +216,16 @@ function LiveOffline({ error, onRetry }: { error: string | null; onRetry: () => 
     <div className="live__panel live__panel--offline" role="alert">
       <span className="live__panel-label">Live feed unavailable</span>
       <p>
-        The interface cannot reach <code className="mono">/live/snapshot</code>. It only
-        exists while the dev server is running.
+        The interface cannot reach <code className="mono">/live/snapshot</code>. Connect a
+        backend to run the agents. Follow the{" "}
+        <a
+          href="https://github.com/Rituraj-13/tend/blob/main/README.md"
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub README quickstart
+        </a>{" "}
+        to set it up.
       </p>
       {error ? <p className="live__panel-detail">{error}</p> : null}
       <button type="button" className="button button--sm" onClick={onRetry}>

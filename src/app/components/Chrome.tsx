@@ -1,5 +1,5 @@
 import type { DemoPayload } from "../../shared/types";
-import { ArrowRight, Mark } from "./Icons";
+import { ArrowRight, GitHub, Mark } from "./Icons";
 
 export function Masthead({ onPlay }: { onPlay: () => void }) {
   return (
@@ -44,6 +44,16 @@ export function Masthead({ onPlay }: { onPlay: () => void }) {
               Play the room
               <ArrowRight className="button__icon" width={12} height={12} />
             </button>
+            <a
+              className="masthead__github"
+              href="https://github.com/Rituraj-13/tend"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Tend on GitHub"
+              title="Tend on GitHub"
+            >
+              <GitHub width={19} height={19} />
+            </a>
           </div>
         </div>
       </header>

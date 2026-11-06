@@ -316,6 +316,28 @@ button {
   gap: 18px;
 }
 
+.masthead__github {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition:
+    color 0.18s var(--ease),
+    border-color 0.18s var(--ease),
+    background 0.18s var(--ease);
+}
+
+.masthead__github:hover {
+  border-color: var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+
 .masthead__badge {
   display: inline-flex;
   align-items: center;
@@ -3841,6 +3863,15 @@ button {
   border-color: var(--ink);
 }
 
+.live__github {
+  margin-left: 0;
+  gap: 6px;
+}
+
+.live__nav--replay {
+  margin-left: auto;
+}
+
 .live__head {
   display: grid;
   gap: 10px;
@@ -3860,6 +3891,42 @@ button {
   color: var(--muted);
   font-size: 15px;
   line-height: 1.6;
+}
+
+.live__disclaimer {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 13px 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--sage);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.live__disclaimer strong {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+
+.live__disclaimer a {
+  color: #493611;
+  font-weight: 650;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.live__disclaimer code {
+  overflow-wrap: anywhere;
 }
 
 .live__statusbar {
@@ -4407,11 +4474,31 @@ button {
 
   .live__bar-inner {
     height: 58px;
-    gap: 12px;
+    gap: 8px;
   }
 
   .live__tag {
     display: none;
+  }
+
+  .live__nav {
+    gap: 4px;
+    font-size: 8.5px;
+    letter-spacing: 0.04em;
+  }
+
+  .live__github span {
+    display: none;
+  }
+
+  .live__github svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .live__disclaimer {
+    flex-direction: column;
+    gap: 5px;
   }
 
   .live__head {
