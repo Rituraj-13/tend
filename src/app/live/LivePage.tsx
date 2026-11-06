@@ -215,8 +215,8 @@ function LiveWaiting() {
         <code>{`TEND_LIVE_DIR=var/live npm run agent`}</code>
       </pre>
       <p className="live__panel-detail">
-        See <code className="mono">docs/LIVE.md</code> for the two-terminal runbook.
-        The landing page is an offline replay; this page is the live path.
+        Run one agent per terminal. The landing page is an offline replay; this page
+        is the live path.
       </p>
     </div>
   );

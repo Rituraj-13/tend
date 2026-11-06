@@ -366,7 +366,7 @@ The projection is enforced by `tests/privacy.test.ts`, which scans the serialise
 
 The landing page is a recording. The page at `/live` is the room while it is happening.
 
-![Live room — two agents, one Switch room, read-only](docs/shots/12-live.png)
+![Live room — two agents, one Switch room, read-only](assets/shots/12-live.png)
 
 Each agent process writes one projection to `var/live/<key>.json`. A Vite middleware merges the files and serves `GET /live/snapshot`. The page polls every two seconds. The transcript, agent states, medication summaries, and withheld-note counts come from the real room. Private notes and appointment text never enter the projection.
 
@@ -381,7 +381,7 @@ The page handles the states a live surface actually has:
 | Offline | The endpoint did not answer; the last good snapshot stays visible |
 | Partial view | One agent file failed validation; the other still renders |
 
-The runbook, the endpoint contract, and the privacy boundary are in [`docs/LIVE.md`](docs/LIVE.md). The short version is below.
+The endpoint contract and the privacy boundary are below.
 
 ---
 
