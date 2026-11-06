@@ -4,6 +4,8 @@
 
 [![Tests](https://img.shields.io/badge/tests-59%20passing-brightgreen)](#testing) [![License](https://img.shields.io/badge/license-MIT-blue)](#license) [![Hackathon](https://img.shields.io/badge/Flip%20the%20Switch%202026-Best%20Personal%20Workflow-orange)](https://www.wemakedevs.org/hackathons/switch)
 
+**Live demo:** [tend.riturajdey.dev](https://tend.riturajdey.dev/)
+
 Tend is a **family medication safety tool** built on Switch. Each adult sibling has their own AI agent that keeps their own private care record. When a new prescription arrives in the family room, the agents check each other, surface any possible drug interaction, record the human decision, and write an appointment brief — all without either agent reading the other's private notes.
 
 **Two agents. Two private stores. One Switch room. The conflict only exists because both are in it.**
