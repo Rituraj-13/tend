@@ -28,7 +28,6 @@ export function Masthead({ onPlay }: { onPlay: () => void }) {
           <nav className="masthead__nav" aria-label="Sections">
             <a href="#room">The room</a>
             <a href="#brief">The brief</a>
-            <a href="#switch">How it works</a>
             <a href="/live">Live room</a>
           </nav>
 
