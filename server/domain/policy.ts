@@ -251,7 +251,7 @@ export class CareAgent {
         "",
         `${briefSummary(brief)}.`,
         "",
-        `${owner}, the appointment copy is on the Tend page, or ask me for a handover any time.`,
+        `${owner}, the appointment copy is in the care brief on the Tend page, or ask me for a handover any time.`,
       ].join("\n"),
       { sender: agentName, threadId, tone: "handover" },
     );

@@ -2,9 +2,9 @@ import { useMemo, useState } from "react";
 import type { ChatMessage, Conflict, DemoPayload } from "../../shared/types";
 import { formatClock, formatDay, formatMoment, title } from "../../shared/format";
 import { ArrowDown, Check, PlusMinus, Sprig } from "./Icons";
+import { RichText } from "./RichText";
 
 const TEND_BLOCK = /```tend\s*([\s\S]*?)```/;
-const BOLD = /(\*\*[^*]+\*\*)/g;
 
 interface Props {
   message: ChatMessage;
@@ -82,21 +82,6 @@ export function Message({ message, demo, visible, index }: Props) {
         ) : null}
       </article>
     </li>
-  );
-}
-
-function RichText({ text }: { text: string }) {
-  const parts = text.split(BOLD);
-  return (
-    <>
-      {parts.map((part, index) =>
-        part.startsWith("**") && part.endsWith("**") ? (
-          <strong key={index}>{part.slice(2, -2)}</strong>
-        ) : (
-          <span key={index}>{part}</span>
-        ),
-      )}
-    </>
   );
 }
 

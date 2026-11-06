@@ -2,6 +2,8 @@ import { join } from "node:path";
 import { seedMaya, seedRohan } from "../server/domain/demo";
 import { CareAgent } from "../server/domain/policy";
 import { Store } from "../server/domain/store";
+import { RecordingRoom } from "../server/live/recorder";
+import { LiveWriter } from "../server/live/writer";
 import { loadConfig } from "../server/switch/config";
 import { runAgent } from "../server/switch/run";
 
@@ -30,19 +32,47 @@ if (process.argv.includes("--seed")) {
 }
 
 const config = loadConfig();
+const clock = () => new Date().toISOString();
+const liveDir = process.env.TEND_LIVE_DIR?.trim() || "var/live";
 
-await runAgent(config, (room) => {
-  return new CareAgent({
-    owner: OWNER,
-    agentName: AGENT_NAME,
-    peerOwner: PEER_OWNER,
-    peerAgent: PEER_AGENT,
-    person: PERSON,
-    store,
-    room,
-    clock: () => new Date().toISOString(),
-  });
+const writer = new LiveWriter({
+  dir: join(process.cwd(), liveDir),
+  key: STORE_KEY,
+  owner: OWNER,
+  agent: AGENT_NAME,
+  person: PERSON,
+  roomId: config.roomId,
+  store,
+  clock,
 });
+writer.start();
+
+try {
+  await runAgent(config, (switchRoom) => {
+    switchRoom.onOutboundConfirmed((localId, serverId) => writer.confirm(localId, serverId));
+    const room = new RecordingRoom(switchRoom, {
+      onOutbound: (message) => writer.observeOutbound(message),
+    });
+    const agent = new CareAgent({
+      owner: OWNER,
+      agentName: AGENT_NAME,
+      peerOwner: PEER_OWNER,
+      peerAgent: PEER_AGENT,
+      person: PERSON,
+      store,
+      room,
+      clock,
+    });
+    return {
+      handle(message) {
+        writer.observeInbound(message);
+        return agent.handle(message);
+      },
+    };
+  });
+} finally {
+  writer.stop();
+}
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
