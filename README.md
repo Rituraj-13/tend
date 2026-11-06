@@ -2,7 +2,7 @@
 
 > **Each agent knows half. The room knows enough.**
 
-[![Tests](https://img.shields.io/badge/tests-36%20passing-brightgreen)](#testing) [![License](https://img.shields.io/badge/license-MIT-blue)](#license) [![Hackathon](https://img.shields.io/badge/Flip%20the%20Switch%202026-Best%20Personal%20Workflow-orange)](https://www.wemakedevs.org/hackathons/switch)
+[![Tests](https://img.shields.io/badge/tests-59%20passing-brightgreen)](#testing) [![License](https://img.shields.io/badge/license-MIT-blue)](#license) [![Hackathon](https://img.shields.io/badge/Flip%20the%20Switch%202026-Best%20Personal%20Workflow-orange)](https://www.wemakedevs.org/hackathons/switch)
 
 Tend is a **family medication safety tool** built on Switch. Each adult sibling has their own AI agent that keeps their own private care record. When a new prescription arrives in the family room, the agents check each other, surface any possible drug interaction, record the human decision, and write an appointment brief — all without either agent reading the other's private notes.
 
@@ -24,6 +24,7 @@ Tend is a **family medication safety tool** built on Switch. Each adult sibling 
 - [Project structure](#project-structure)
 - [Switch integration](#switch-integration)
 - [Privacy model](#privacy-model)
+- [The live room](#the-live-room)
 - [Running live with a Switch server](#running-live-with-a-switch-server)
 - [Testing](#testing)
 - [Design decisions](#design-decisions)
@@ -361,6 +362,29 @@ The projection is enforced by `tests/privacy.test.ts`, which scans the serialise
 
 ---
 
+## The live room
+
+The landing page is a recording. The page at `/live` is the room while it is happening.
+
+![Live room — two agents, one Switch room, read-only](docs/shots/12-live.png)
+
+Each agent process writes one projection to `var/live/<key>.json`. A Vite middleware merges the files and serves `GET /live/snapshot`. The page polls every two seconds. The transcript, agent states, medication summaries, and withheld-note counts come from the real room. Private notes and appointment text never enter the projection.
+
+The page handles the states a live surface actually has:
+
+| State | What you see |
+|---|---|
+| Waiting | No agent has written a projection yet |
+| Live | Both agents updated within 15 seconds |
+| Stale | An agent stopped sending its heartbeat |
+| Closed | An agent process exited cleanly |
+| Offline | The endpoint did not answer; the last good snapshot stays visible |
+| Partial view | One agent file failed validation; the other still renders |
+
+The runbook, the endpoint contract, and the privacy boundary are in [`docs/LIVE.md`](docs/LIVE.md). The short version is below.
+
+---
+
 ## Running live with a Switch server
 
 Each family member runs one agent process. The two processes connect to the same Switch room and talk to each other through it.
@@ -433,6 +457,8 @@ The agents do the rest.
 | `TEND_AGENT_NAME` | Yes | Display name this agent is registered with (e.g. `Maya's agent`) |
 | `TEND_PEER_OWNER` | Yes | Display name of the other owner (e.g. `Rohan`) |
 | `TEND_PEER_AGENT` | Yes | Display name of the other agent (e.g. `Rohan's agent`) |
+| `TEND_LIVE_DIR` | No | Directory for the live projection. Defaults to `var/live` |
+| `TEND_STORE_ROOT` | No | Directory for the private stores. Defaults to `var` |
 
 ---
 
@@ -442,17 +468,21 @@ The agents do the rest.
 npm test
 ```
 
-**36 tests. ~400ms. No network. No API keys.**
+**59 tests. ~500ms. No network. No API keys.**
 
 | File | Tests | What it covers |
 |---|---|---|
 | `tests/golden-path.test.ts` | 7 | Full end-to-end story — conflict evidence, decision audit trail, beats, brief contents |
 | `tests/privacy.test.ts` | 4 | Privacy boundary — note strings never appear in wire format or brief |
-| `tests/brain.test.ts` | 7 | Prescription extraction from natural text, block codec round-trips |
+| `tests/brain.test.ts` | 7 | Prescription extraction from natural text, block round-trips |
 | `tests/models.test.ts` | 4 | Conflict state machine — refused transitions throw `InvalidTransition` |
 | `tests/interactions.test.ts` | 5 | Rule pack lookup, normalisation, severity ranking |
 | `tests/generated.test.ts` | 1 | Committed `demo.json` matches a fresh `runDemo()` — determinism check |
 | `tests/switchboard.test.ts` | 8 | Powered and sealed board states — real facts, locked room, no undefined fields |
+| `tests/live-writer.test.ts` | 7 | Projection, atomic write, echo dedupe, restart hydration, privacy |
+| `tests/live-merge.test.ts` | 9 | Cross-file dedupe, tone precedence, stale and closed states, malformed files |
+| `tests/live-endpoint.test.ts` | 5 | GET, HEAD, 405, empty snapshot, cache headers, `var/` deny |
+| `tests/switch-confirm.test.ts` | 2 | Local id to server event id on success, silence on failure |
 
 The privacy test is the most important. It scans the actual serialised peer reply JSON for five known note strings and fails if any appear. If someone ever adds a field to the medication projection that leaks notes, the test tells them before they ship.
 
@@ -489,7 +519,7 @@ Built for **Flip the Switch 2026 · Best Personal or Creative Workflow**.
 | Criterion | Evidence |
 |---|---|
 | **Switch is central** | The conflict needs two agents in one addressed Switch room. Remove the room and the record splits. `server/switch/client.ts` implements the full agent protocol — WebSocket with cursor tracking and reconnect, `send_targeted_message`, `connect_to_room`. |
-| **Technical execution** | `npm install && npm run dev` is the full setup. `npm test` runs 36 tests in ~400ms with no network. `npm run demo` replays the golden path offline. `npm run build` typechecks and produces a production build. |
+| **Technical execution** | `npm install && npm run dev` is the full setup. `npm test` runs 59 tests in ~500ms with no network. `npm run demo` replays the golden path offline. `npm run build` typechecks and produces a production build. The `/live` route follows two real Switch agents through `var/live` without a second server process. |
 | **Creativity and impact** | A family medication safety workflow, not another developer tool. The demo moment is a real information gap — one sibling knew the antibiotic, the other knew the blood thinner — not a prompt trick. |
 | **Presentation and docs** | `README.md` carries the product spec, the demo script, and the judging map. `assets/shots/` holds the screenshots. The React web app is the visual submission. |
 
