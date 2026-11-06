@@ -26,6 +26,7 @@ export class SwitchOpError extends Error {
 export class SwitchRoom implements Room {
   private readonly config: SwitchConfig;
   private readonly handlers = new Set<Handler>();
+  private readonly confirmed = new Set<(localId: string, serverId: string) => void>();
   private readonly cache = new Map<string, ChatMessage>();
   private readonly pending = new Set<Promise<void>>();
   private socket: WebSocket | null = null;
@@ -89,6 +90,13 @@ export class SwitchRoom implements Room {
     this.handlers.add(handler);
     return () => {
       this.handlers.delete(handler);
+    };
+  }
+
+  onOutboundConfirmed(handler: (localId: string, serverId: string) => void): () => void {
+    this.confirmed.add(handler);
+    return () => {
+      this.confirmed.delete(handler);
     };
   }
 
@@ -175,6 +183,7 @@ export class SwitchRoom implements Room {
     const message = this.cache.get(localId);
     if (message === undefined) return;
     this.cache.set(eventId, { ...message, id: eventId });
+    for (const handler of this.confirmed) handler(localId, eventId);
   }
 
   private async callOp<T>(op: string, args: Record<string, unknown>): Promise<T> {
