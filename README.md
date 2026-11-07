@@ -4,11 +4,13 @@
 
 [![Tests](https://img.shields.io/badge/tests-59%20passing-brightgreen)](#testing) [![License](https://img.shields.io/badge/license-MIT-blue)](#license) [![Hackathon](https://img.shields.io/badge/Flip%20the%20Switch%202026-Best%20Personal%20Workflow-orange)](https://www.wemakedevs.org/hackathons/switch)
 
-**Live demo:** [tend.riturajdey.dev](https://tend.riturajdey.dev/)
+**Live demo:** [tend.riturajdey.dev](https://tend.riturajdey.dev/) · **Built on:** [Switch](https://github.com/sandbox-quantum/switch)
 
-Tend is a **family medication safety tool** built on Switch. Each adult sibling has their own AI agent that keeps their own private care record. When a new prescription arrives in the family room, the agents check each other, surface any possible drug interaction, record the human decision, and write an appointment brief — all without either agent reading the other's private notes.
+Tend is a **family medication coordination tool** built on [Switch](https://github.com/sandbox-quantum/switch). Each adult sibling has their own deterministic agent (rule-based, no LLM) that keeps their own private care record. When a new prescription arrives in the family room, the agents check each other, surface any possible drug interaction, record the human decision, and write an appointment brief, all without either agent reading the other's private notes.
 
 **Two agents. Two private stores. One Switch room. The conflict only exists because both are in it.**
+
+> **Not medical advice.** Tend is a hackathon demo. Its interaction check is a nine-pair demo rule set, not a clinical database. It never says a combination is safe. It flags a *possible* interaction and asks a human to confirm with a clinician.
 
 ---
 
@@ -43,9 +45,9 @@ One person holds the pharmacy history. Another attended the last appointment. A 
 
 A new medication starts. The sibling who knows about the blood thinner is not in the conversation. Nobody is negligent. The information simply never meets.
 
-**Existing tools don't fix this.** A shared dashboard asks everyone to do extra work for someone else's benefit — people stop updating it. A single bot with one context is a fourth private silo that asks the family to trust a summary of records it never saw. Neither works.
+**Existing tools don't fix this.** A shared dashboard asks everyone to do extra work for someone else's benefit, so people stop updating it. A single bot with one context is a fourth private silo that asks the family to trust a summary of records it never saw. Neither works.
 
-Tend takes a different shape: each person keeps their own record. The only thing that crosses is a structured, redacted summary — and only when a new prescription makes it necessary.
+Tend takes a different shape: each person keeps their own record. The only thing that crosses is a structured, redacted summary, and only when a new prescription makes it necessary.
 
 ---
 
@@ -60,14 +62,14 @@ Here is what happens next, without anyone else typing anything:
 | # | Who | What |
 |---|---|---|
 | 1 | Maya's agent | Records the prescription in Maya's private store |
-| 2 | Maya's agent | Tells Maya what it recorded, says it cannot see Rohan's records |
+| 2 | Maya's agent | Tells Maya what it recorded and says it cannot see Rohan's records |
 | 3 | Maya's agent → Rohan's agent | Sends a targeted peer check with the candidate medication |
 | 4 | Rohan's agent | Reads its own store, replies with 2 active medications and withholds 4 notes |
 | 5 | Maya's agent | Runs the two lists against the interaction rule pack |
 | 6 | Maya's agent | Posts a **conflict card**: trimethoprim + warfarin, high attention, cites both records |
-| 7 | Rohan | The pharmacist flagged it too. Posts confirmation. |
+| 7 | Rohan | The pharmacist flagged it too. Posts confirmation |
 | 8 | Maya | Posts: *"Decision: hold the new med until Dr Rao confirms."* |
-| 9 | Maya's agent | Records the decision against Maya's message ID, resolves the conflict |
+| 9 | Maya's agent | Records the decision against Maya's message ID and resolves the conflict |
 | 10 | Maya's agent | Writes and posts the appointment brief |
 
 **The conflict card at step 6 could not exist on either side alone.** Maya's agent had the antibiotic and no blood thinner. Rohan's agent had the blood thinner and no antibiotic. The join happens in the room.
@@ -104,10 +106,11 @@ Maya's agent          Rohan's agent
 
 ### The peer protocol
 
-Agent-to-agent messages carry a human-readable line (visible to everyone in the room) and one fenced JSON block (read by the receiving agent):
+Agent-to-agent messages carry a human-readable line (visible to everyone in the room) and one fenced JSON block (read by the receiving agent).
 
 **Maya's agent → Rohan's agent:**
-```
+
+````text
 Rohan's agent, can you check the records you hold against this new prescription?
 
 ```tend
@@ -123,10 +126,11 @@ Rohan's agent, can you check the records you hold against this new prescription?
   }
 }
 ```
-```
+````
 
 **Rohan's agent → Maya's agent:**
-```
+
+````text
 Checked my records for Trimethoprim.
 I hold 2 active medications and 4 notes.
 I can share names, doses and dates. I will not share notes.
@@ -143,9 +147,9 @@ I can share names, doses and dates. I will not share notes.
   "withheld": 4
 }
 ```
-```
+````
 
-The room sees both sides. Transparency is intentional — a family member can read exactly what was shared between agents.
+The room sees both sides. Transparency is intentional: a family member can read exactly what was shared between agents.
 
 ### The conflict card
 
@@ -182,17 +186,18 @@ When Maya posts `Decision: hold the new med until Dr Rao confirms.`, the agent r
 }
 ```
 
-A care record that says "medication held" is a claim. A care record that says **"Maya held it at 09:22, in message m_008, against conflict c_0001"** is evidence. The difference is whether the next clinician can audit it.
+A care record that says "medication held" is a claim. A care record that says **"Maya held it at 09:22, in message m_008, against conflict maya:c0001"** is evidence. The difference is whether the next clinician can audit it.
 
 ---
 
 ## Quick start
 
-Tend provides two ways to run:
-1. **Instant Offline Replay (`/`)** — Zero external setup, zero API keys. Perfect for offline judging and inspecting the full 10-beat narrative.
-2. **Live Multi-Agent Room (`/live`)** — Connected to a live Switch server, receiving real prescriptions and multi-agent peer checks over WebSockets. (See [Running live with a Switch server](#running-live-with-a-switch-server)).
+Tend runs in two ways:
 
-### Option A: Instant Offline Replay (Evaluation Mode)
+1. **Instant offline replay (`/`).** Zero external setup, zero API keys. Best for evaluating the full 10-beat story.
+2. **Live multi-agent room (`/live`).** Connected to a real Switch server, receiving real prescriptions and peer checks over WebSockets. See [Running live with a Switch server](#running-live-with-a-switch-server).
+
+### Option A: Instant offline replay (evaluation mode)
 
 **Requirements:** Node.js 20+. No API keys. No external services.
 
@@ -204,24 +209,25 @@ npm install
 
 # 2. Run the full demo in the terminal
 npm run demo
-# Prints all 10 messages, writes demo.json
+# Prints all 10 messages and writes demo.json
 
 # 3. Start the web app
 npm run dev
 # → http://127.0.0.1:5173
 ```
 
-The web app auto-runs the demo before starting, so `npm run dev` is all you need.
+The web app runs the demo automatically before starting, so `npm run dev` is all you need.
 
 **What you'll see in the browser at `/`:**
-- **Hero section** — two private stores + shared room visualised side by side
-- **Room section** — interactive replay with play/pause/step controls and expandable JSON payloads
-- **Brief section** — the print-ready appointment brief with a "Print this page" button
-- **Switchboard** — flip the switch to connect two private stores and watch the room fill
 
-### Option B: Real Live Room (`/live`)
+- **Hero:** two private stores and the shared room, side by side
+- **Room:** an interactive replay with play, pause and step controls, and expandable JSON payloads
+- **Brief:** the print-ready appointment brief with a "Print this page" button
+- **Switchboard:** flip the switch to connect the two private stores and watch the room fill
 
-To connect real agents to a live Switch server with your own credentials and real-world prescriptions, jump to [Running live with a Switch server](#running-live-with-a-switch-server) and open `http://127.0.0.1:5173/live`.
+### Option B: Real live room (`/live`)
+
+To connect real agents to a live Switch server, follow [Running live with a Switch server](#running-live-with-a-switch-server), then open `http://127.0.0.1:5173/live`.
 
 ---
 
@@ -233,32 +239,33 @@ tend/
 │   ├── domain/
 │   │   ├── brain.ts          Prescription extractor (regex) + peer block codec
 │   │   ├── brief.ts          Builds the appointment brief from both stores
-│   │   ├── demo.ts           Deterministic golden path — the whole story, offline
+│   │   ├── demo.ts           Deterministic golden path, the whole story offline
 │   │   ├── fake-room.ts      In-process Room for tests and demo mode
 │   │   ├── interactions.ts   Rule pack lookup and finding shape
 │   │   ├── models.ts         Conflict state machine (open → resolved / dismissed)
-│   │   ├── policy.ts         Intent router — the agent's brain
+│   │   ├── policy.ts         Intent router, the agent's brain
 │   │   ├── room.ts           Room interface (the boundary between domain and transport)
 │   │   └── store.ts          Append-only NDJSON store per owner
+│   ├── live/                 Recorder, per-agent writer and snapshot merge for /live
 │   └── switch/
-│       ├── client.ts         SwitchRoom — WebSocket + HTTP implementation of Room
+│       ├── client.ts         SwitchRoom, the WebSocket + HTTP implementation of Room
 │       ├── config.ts         Env var loading and validation
 │       ├── register.ts       One-time agent registration
 │       └── run.ts            Live agent process entry point
 ├── src/
 │   ├── app/
-│   │   ├── App.tsx           Root — wires hero, room, brief, switchboard
+│   │   ├── App.tsx           Root, wires hero, room, brief, switchboard
 │   │   ├── switchboard-model.ts Pure power model and resolved board data
 │   │   ├── useReplay.ts      Step cursor with play/pause/jump
 │   │   └── components/
 │   │       ├── BriefSheet.tsx  Print-ready appointment brief
 │   │       ├── Hero.tsx        Landing section with the product stage
 │   │       ├── Message.tsx     Chat message with expandable payload
-│   │       ├── Rail.tsx        Privacy sidebar — live store counts
-│   │       ├── RoomSection.tsx Replay player + beat timeline
+│   │       ├── Rail.tsx        Privacy sidebar with live store counts
+│   │       ├── RoomSection.tsx Replay player and beat timeline
 │   │       └── Switchboard.tsx Interactive stores-to-room switchboard
 │   └── shared/
-│       ├── types.ts          All domain types — shared between server and client
+│       ├── types.ts          All domain types, shared between server and client
 │       └── format.ts         Date formatting, counters, slugs
 ├── tests/
 │   ├── brain.test.ts         Prescription extraction and block codec
@@ -266,13 +273,15 @@ tend/
 │   ├── golden-path.test.ts   End-to-end story assertions
 │   ├── interactions.test.ts  Rule pack lookup
 │   ├── models.test.ts        Conflict state machine transitions
-│   └── privacy.test.ts       Privacy boundary — note text never leaks
+│   └── privacy.test.ts       Privacy boundary, note text never leaks
 ├── data/
 │   └── interactions.json     Nine-pair demo interaction rule pack
+├── docs/                     Product requirements (PRD) and the demo script
 ├── scripts/
 │   ├── demo.ts               Writes public/demo.json + src/generated/demo.json
 │   ├── tend-agent.ts         Live agent process
-│   └── switch-demo.ts        Switch connection check and registration
+│   ├── switch-demo.ts        Switch connection check and registration
+│   └── shots.mjs             Captures the README screenshots
 ├── var/                      Per-owner NDJSON stores (created on first run)
 │   ├── maya/
 │   └── rohan/
@@ -284,6 +293,8 @@ tend/
 
 ## Switch integration
 
+[Switch](https://github.com/sandbox-quantum/switch) is open-source infrastructure for putting AI agents into team chat. Every channel becomes a room, and agents join it like any other teammate. Switch ships no agents and no models. Any agent that speaks the Switch agent protocol can join a room, which is how Tend uses its own agents. See the [Switch docs](https://docs.switchagents.ai/) and the [10-minute quickstart](https://docs.switchagents.ai/switch-rooms/getting-started).
+
 Switch provides four things Tend cannot build itself:
 
 | Switch feature | Why Tend needs it |
@@ -291,7 +302,7 @@ Switch provides four things Tend cannot build itself:
 | Shared room with one timeline | The two agents need a surface they both read and write |
 | `send_targeted_message` | Maya's agent addresses Rohan's agent by display name |
 | `sender_kind: "agent"` on inbound events | The policy knows if the sender is a human or the peer agent |
-| Room history as a witness | The decision message carries a Switch message ID — the record is auditable |
+| Room history as a witness | The decision message carries a Switch message ID, so the record is auditable |
 
 ### Switch API endpoints used
 
@@ -313,7 +324,7 @@ POST /agents/{agent_id}/ops/connect_to_room
   → joins the agent to the room on startup
 ```
 
-### WebSocket protocol
+### Connection protocol
 
 The client maintains a cursor across reconnects. Every inbound frame that carries a sequence number advances the cursor. On reconnect, `start_from` tells Switch where to resume:
 
@@ -325,7 +336,7 @@ Server → Client  ping (cursor)
 Client → Server  pong (cursor)
 ```
 
-Responding to `ping` with the current cursor is required. Without it the agent misses messages on reconnect and the gap is silent.
+Responding to `ping` with the current cursor matters. Without it the agent can miss messages on reconnect, and the gap is silent.
 
 ---
 
@@ -354,7 +365,7 @@ summaries(): MedicationSummary[] {
 }
 ```
 
-The projection is enforced by `tests/privacy.test.ts`, which scans the serialised peer reply and the generated brief for five known private note strings and asserts each one is absent. It also asserts that every shared medication has **exactly** those four keys — no more, no fewer. If anyone adds a field to the projection, the test fails.
+The projection is enforced by `tests/privacy.test.ts`, which scans the serialised peer reply and the generated brief for five known private note strings and asserts each one is absent. It also asserts that every shared medication has **exactly** those four keys, no more and no fewer. If anyone adds a field to the projection, the test fails.
 
 ---
 
@@ -364,7 +375,7 @@ The landing page is a recording. The page at `/live` is the room while it is hap
 
 ![Live room — two agents, one Switch room, read-only](assets/shots/12-live.png)
 
-Each agent process writes one projection to `var/live/<key>.json`. A Vite middleware merges the files and serves `GET /live/snapshot`. The page polls every two seconds. The transcript, agent states, medication summaries, and withheld-note counts come from the real room. Private notes and appointment text never enter the projection.
+Each agent process writes one projection to `var/live/<key>.json`. A Vite middleware merges the files and serves `GET /live/snapshot`. The page polls every two seconds. The transcript, agent states, medication summaries and withheld-note counts come from the real room. Private notes and appointment text never enter the projection.
 
 The page handles the states a live surface actually has:
 
@@ -377,7 +388,12 @@ The page handles the states a live surface actually has:
 | Offline | The endpoint did not answer; the last good snapshot stays visible |
 | Partial view | One agent file failed validation; the other still renders |
 
-The endpoint contract and the privacy boundary are below.
+### Snapshot endpoint
+
+- `GET /live/snapshot` returns the merged projection of every agent file in `var/live/`. `HEAD` is also supported, and any other method returns `405`.
+- When no agent has written a file yet, it returns an empty snapshot, so the page can show the Waiting state.
+- The endpoint serves only the merged projection. The raw `var/` directory is never served.
+- The projection holds room messages, medication names and doses, and counts. It never holds note or appointment text. `tests/live-writer.test.ts` and `tests/privacy.test.ts` enforce this.
 
 ---
 
@@ -385,20 +401,30 @@ The endpoint contract and the privacy boundary are below.
 
 Each family member runs one agent process. The two processes connect to the same Switch room and talk to each other through it.
 
-You can configure agents using **environment files** (`.env.maya`, `.env.rohan`) or **inline environment variables**.
+### Step 0: Set up Switch
 
-### Step 1 — Register your agents (once per agent)
+This is the standard Switch setup. The [10-minute quickstart](https://docs.switchagents.ai/switch-rooms/getting-started) walks through it in detail.
 
-Run this once for Maya's agent, and once for Rohan's agent:
+1. Install Docker and [Switch Console](https://docs.switchagents.ai/switch-rooms/getting-started), the desktop app. It runs on macOS, with Windows and Linux builds in early access.
+2. Open Switch Console. It starts a local Switch server in Docker on your machine.
+3. Connect a chat app. Mattermost comes bundled with Switch, so you don't need a Slack or Teams workspace. You can connect Slack, Teams, Discord or Telegram later.
+4. Create a channel for the family. Switch turns every channel into a room.
+5. Note three values: the server's base URL, a registration token, and the room ID.
+
+Tend's agents are custom agents, so they join the room through the Switch agent protocol. Registering them (Step 1) is the one extra step compared with the quickstart's built-in agents.
+
+### Step 1: Register your agents (once per agent)
+
+Run this once for Maya's agent and once for Rohan's agent:
 
 ```bash
 SWITCH_BASE_URL=http://your-switch-server \
 SWITCH_REGISTRATION_TOKEN=your-token \
 npm run switch:register
-# Returns JSON containing agentId and apiKey — save both for each agent
+# Returns JSON containing agentId and apiKey. Save both for each agent.
 ```
 
-### Step 2 — Configure environment files (Recommended)
+### Step 2: Configure environment files (recommended)
 
 Copy the provided example files:
 
@@ -407,47 +433,52 @@ cp .env.maya.example .env.maya
 cp .env.rohan.example .env.rohan
 ```
 
-Fill in your `SWITCH_BASE_URL`, `SWITCH_REGISTRATION_TOKEN`, `SWITCH_ROOM_ID`, and the registered `SWITCH_AGENT_ID` and `SWITCH_API_KEY` in `.env.maya` and `.env.rohan`.
+Fill in `SWITCH_BASE_URL`, `SWITCH_REGISTRATION_TOKEN`, `SWITCH_ROOM_ID`, and the registered `SWITCH_AGENT_ID` and `SWITCH_API_KEY` in `.env.maya` and `.env.rohan`. The [variable reference](#environment-variable-reference) below lists everything each agent needs.
 
-### Step 3 — Start the agents
+### Step 3: Start the agents
 
-Open two terminal windows:
+Open two terminal windows, one per sibling, so each agent keeps its own private store.
 
-#### Running with Real Data (Production Mode — Empty/Clean Stores)
-Omit `--seed`. Each agent starts with a clean store (or existing records in `var/<owner>/events.ndjson`). All prescriptions and notes are recorded dynamically from room messages:
+#### Real data (clean stores)
+
+Omit `--seed`. Each agent starts with a clean store, or with the records already in `var/<owner>/events.ndjson`. Prescriptions and notes are recorded from room messages:
 
 ```bash
-# Terminal 1 — Maya's agent
+# Terminal 1: Maya's agent
 ENV_FILE=.env.maya npm run agent
 
-# Terminal 2 — Rohan's agent
+# Terminal 2: Rohan's agent
 ENV_FILE=.env.rohan npm run agent
 ```
 
-*(Alternatively, if passing inline environment variables without an env file, omit `--seed` from the inline command).*
+#### Golden-path demo (seeded stores)
 
-#### Running the Golden Path Demo (Seed Mode)
-To test the pre-packaged golden path with seeded records (Trimethoprim + Warfarin), add `--seed`:
+To test the packaged story with seeded records (trimethoprim and warfarin), add `--seed`:
 
 ```bash
-# Terminal 1 — Maya's agent (seeded)
+# Terminal 1: Maya's agent (seeded)
 ENV_FILE=.env.maya npm run agent -- --seed
 
-# Terminal 2 — Rohan's agent (seeded)
+# Terminal 2: Rohan's agent (seeded)
 ENV_FILE=.env.rohan npm run agent -- --seed
 ```
 
-### Step 4 — Open the live room in your browser
+**Seeding notes:**
+
+- `--seed` only works when `TEND_STORE_KEY` is `maya` or `rohan`. Any other key stops with an error.
+- If a store already has records, seeding is skipped, so re-running never duplicates data.
+
+### Step 4: Open the live room in your browser
 
 ```bash
 npm run dev
 ```
 
-Navigate to **<http://127.0.0.1:5173/live>**. You will see both agents connect and report status in real time.
+Open **<http://127.0.0.1:5173/live>**. You will see both agents connect and report status in real time.
 
-### Step 5 — Post in the Switch room
+### Step 5: Post in the Switch room
 
-Type messages into your Switch channel (Telegram, Slack, Mattermost, or via Switch Ops):
+Type messages into your Switch channel (Mattermost, Telegram, Slack, or through Switch Ops):
 
 1. **Record an existing medication in Rohan's store:**
    ```text
@@ -457,25 +488,24 @@ Type messages into your Switch channel (Telegram, Slack, Mattermost, or via Swit
    ```text
    Mum started trimethoprim 100 mg today. Dr Rao prescribed it.
    ```
-3. **Watch the live agent coordination:**
+3. **Watch the agents coordinate:**
    - Maya's agent records the new medication in Maya's private store (`var/maya/events.ndjson`).
    - Maya's agent posts a confirmation in the room and sends a targeted `med_check` to Rohan's agent.
-   - Rohan's agent checks its private store, replies with active medications (Warfarin 5 mg), and explicitly withholds private notes (`withheld: 4`).
-   - Maya's agent matches the pair in `data/interactions.json` and posts the **Conflict Card**.
-   - Both `/live` and your chat channel update within 2 seconds.
-
+   - Rohan's agent checks its private store, replies with its active medications (warfarin 5 mg), and withholds private notes (`withheld: 4`).
+   - Maya's agent matches the pair in `data/interactions.json` and posts the **conflict card**.
+   - Both `/live` and your chat channel update within two seconds.
 4. **Record a family decision:**
    ```text
    Decision: hold the new med until Dr Rao confirms.
    ```
-   - Maya's agent records the decision against the message ID and updates the appointment brief.
+   Maya's agent records the decision against the message ID and updates the appointment brief.
 
-### Inline environment variables reference (if not using `.env`)
+### Inline variables (instead of env files)
 
-If you prefer passing variables inline rather than using `ENV_FILE`:
+If you prefer passing variables inline:
 
 ```bash
-# Example starting Maya's agent inline:
+# Example: start Maya's agent inline
 TEND_OWNER=Maya \
 TEND_STORE_KEY=maya \
 TEND_PERSON=Kamala \
@@ -489,6 +519,8 @@ SWITCH_ROOM_ID=<room-id> \
 SWITCH_REGISTRATION_TOKEN=<token> \
 npm run agent
 ```
+
+### Environment variable reference
 
 | Variable | Required | Description |
 |---|---|---|
@@ -505,7 +537,7 @@ npm run agent
 | `TEND_PEER_AGENT` | Yes | Display name of the other agent (e.g. `Rohan's agent`) |
 | `TEND_LIVE_DIR` | No | Directory for the live projection. Defaults to `var/live` |
 | `TEND_STORE_ROOT` | No | Directory for the private stores. Defaults to `var` |
-| `ENV_FILE` | No | Path to custom `.env` file (defaults to `.env` if present) |
+| `ENV_FILE` | No | Path to a custom `.env` file. Defaults to `.env` if present |
 
 ---
 
@@ -519,13 +551,13 @@ npm test
 
 | File | Tests | What it covers |
 |---|---|---|
-| `tests/golden-path.test.ts` | 7 | Full end-to-end story — conflict evidence, decision audit trail, beats, brief contents |
-| `tests/privacy.test.ts` | 4 | Privacy boundary — note strings never appear in wire format or brief |
+| `tests/golden-path.test.ts` | 7 | Full end-to-end story: conflict evidence, decision audit trail, beats, brief contents |
+| `tests/privacy.test.ts` | 4 | Privacy boundary: note strings never appear in the wire format or the brief |
 | `tests/brain.test.ts` | 7 | Prescription extraction from natural text, block round-trips |
-| `tests/models.test.ts` | 4 | Conflict state machine — refused transitions throw `InvalidTransition` |
+| `tests/models.test.ts` | 4 | Conflict state machine: refused transitions throw `InvalidTransition` |
 | `tests/interactions.test.ts` | 5 | Rule pack lookup, normalisation, severity ranking |
-| `tests/generated.test.ts` | 1 | Committed `demo.json` matches a fresh `runDemo()` — determinism check |
-| `tests/switchboard.test.ts` | 8 | Powered and sealed board states — real facts, locked room, no undefined fields |
+| `tests/generated.test.ts` | 1 | Committed `demo.json` matches a fresh `runDemo()`, a determinism check |
+| `tests/switchboard.test.ts` | 8 | Powered and sealed board states: real facts, locked room, no undefined fields |
 | `tests/live-writer.test.ts` | 7 | Projection, atomic write, echo dedupe, restart hydration, privacy |
 | `tests/live-merge.test.ts` | 9 | Cross-file dedupe, tone precedence, stale and closed states, malformed files |
 | `tests/live-endpoint.test.ts` | 5 | GET, HEAD, 405, empty snapshot, cache headers, `var/` deny |
@@ -537,25 +569,29 @@ The privacy test is the most important. It scans the actual serialised peer repl
 
 ## Design decisions
 
-### No LLM calls — by design
+### Deterministic agents, no LLM calls
 
-The demo runs entirely offline. The prescription extractor is regex. The interaction check is a JSON rule pack lookup. No model is called, no API key is needed, and the full story runs deterministically in under a second.
+An agent in Tend is a named participant in a Switch room with its own private store and its own policy for what it will share. That policy is deterministic. The prescription extractor is regex. The interaction check is a JSON rule pack lookup. No model is called, no API key is needed, and the full story runs in under a second.
 
-This was deliberate. The offline path means anyone can clone the repo and run everything in one command. The deterministic tests mean the golden path is always the same. And a hallucinating LLM should not be near a medication interaction check — the rule pack is honest about being a demo set, and that honesty is safer than a confident hallucination.
+This was deliberate:
 
-The `extractPrescription()` and `Room` interfaces are designed so an LLM extractor or a different transport can be swapped in without touching the policy layer.
+- **Reproducible.** Anyone can clone the repo and run the same story with one command.
+- **Testable.** The golden path is always identical, so 59 tests can pin it down.
+- **Safer.** A model that can hallucinate should not be near a medication interaction check. The rule pack is honest about being a demo set, and that honesty is safer than a confident hallucination.
+
+Switch is happy to host any agent, including LLM-backed ones. The `extractPrescription()` and `Room` interfaces are designed so an LLM extractor or a different transport can be swapped in without touching the policy layer.
 
 ### Append-only stores
 
-Each owner's data is append-only NDJSON. No updates, no deletes. A conflict that is resolved keeps its evidence. A dismissed conflict keeps its history. The decision record is immutable. This makes the store auditable by construction — open `var/maya/events.ndjson` in any text editor and read the history.
+Each owner's data is append-only NDJSON. No updates, no deletes. A resolved conflict keeps its evidence. A dismissed conflict keeps its history. The decision record is immutable. This makes the store auditable by construction: open `var/maya/events.ndjson` in any text editor and read the history.
 
 ### The `Room` interface
 
-The policy never imports the Switch client. It calls `room.post()`, `room.send()`, and `room.message()`. The `FakeRoom` and `SwitchRoom` both implement the same interface. This is what lets the demo run offline, the tests run without a server, and the Switch client stay thin.
+The policy never imports the Switch client. It calls `room.post()`, `room.send()` and `room.message()`. `FakeRoom` and `SwitchRoom` implement the same interface. That is what lets the demo run offline, the tests run without a server, and the Switch client stay thin.
 
 ### Safety limits
 
-Tend surfaces a possible interaction and stops. It does not diagnose, dose, adjust, or advise. The interaction pack is nine pairs chosen to exercise the demo — not a clinical database. The UI says so on the conflict card, in the brief, and in the footer. Every path ends at a human asking a clinician.
+Tend surfaces a possible interaction and stops. It does not diagnose, dose, adjust or advise. The interaction pack is nine pairs chosen to exercise the demo, not a clinical database. The UI says so on the conflict card, in the brief and in the footer. Every path ends at a human asking a clinician.
 
 ---
 
@@ -565,19 +601,20 @@ Built for **Flip the Switch 2026 · Best Personal or Creative Workflow**.
 
 | Criterion | Evidence |
 |---|---|
-| **Switch is central** | The conflict needs two agents in one addressed Switch room. Remove the room and the record splits. `server/switch/client.ts` implements the full agent protocol — WebSocket with cursor tracking and reconnect, `send_targeted_message`, `connect_to_room`. |
+| **Switch is central** | The conflict needs two agents in one addressed Switch room. Remove the room and the record splits. `server/switch/client.ts` implements the agent protocol client: WebSocket with cursor tracking and reconnect, `send_targeted_message`, and `connect_to_room`. |
 | **Technical execution** | `npm install && npm run dev` is the full setup. `npm test` runs 59 tests in ~700ms with no network. `npm run demo` replays the golden path offline. `npm run build` typechecks and produces a production build. The `/live` route follows two real Switch agents through `var/live` without a second server process. |
-| **Creativity and impact** | A family medication safety workflow, not another developer tool. The demo moment is a real information gap — one sibling knew the antibiotic, the other knew the blood thinner — not a prompt trick. |
-| **Presentation and docs** | `README.md` carries the product spec, the demo script, and the judging map. `assets/shots/` holds the screenshots. The React web app is the visual submission. |
+| **Creativity and impact** | A family medication coordination workflow, not another developer tool. The demo moment is a real information gap, where one sibling knew the antibiotic and the other knew the blood thinner. It is not a prompt trick. |
+| **Presentation and docs** | This README covers the problem, the demo walkthrough, the architecture and the setup. The product requirements and demo script are in [`docs/`](docs/). The [demo video](VIDEO_URL) and the [live demo](https://tend.riturajdey.dev/) show the real app. |
 
 ---
 
 ## Further reading
 
-- [`data/interactions.json`](data/interactions.json) — The nine-pair demo interaction rule pack
-- [`server/domain/policy.ts`](server/domain/policy.ts) — The agent's intent router
-- [`server/switch/client.ts`](server/switch/client.ts) — The Switch WebSocket and HTTP client
-- [`tests/privacy.test.ts`](tests/privacy.test.ts) — The privacy boundary test
+- [`data/interactions.json`](data/interactions.json): the nine-pair demo interaction rule pack
+- [`server/domain/policy.ts`](server/domain/policy.ts): the agent's intent router
+- [`server/switch/client.ts`](server/switch/client.ts): the Switch WebSocket and HTTP client
+- [`tests/privacy.test.ts`](tests/privacy.test.ts): the privacy boundary test
+- [Switch on GitHub](https://github.com/sandbox-quantum/switch) and the [Switch docs](https://docs.switchagents.ai/)
 
 ---
 
